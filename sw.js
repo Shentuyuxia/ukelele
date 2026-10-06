@@ -1,6 +1,6 @@
 // 离线缓存：第一次打开后，没网也能用。
 // 以后改了 index.html，把下面的版本号 +1，手机上就会更新。
-const VERSION = "uke-tuner-v2";
+const VERSION = "uke-tuner-v3";
 const APP_FILES = [
   "./",
   "./index.html",

@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="调音器">
+<meta name="apple-mobile-web-app-title" content="Ukulele">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -21,6 +21,7 @@ html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-b
   --bg:#eef3f0; --panel:#ffffff; --ink:#15302a; --muted:#5d746d; --line:#d3dfda; --soft:#e3ece8;
   --accent:#e0822a; --accent-ink:#ffffff; --wood:#c98b52; --wood-dark:#8a5428;
   --good:#1f9d64; --warn:#d8962a; --bad:#c94a3a; --needle:#15302a;
+  --major:#e0822a; --minor:#4a6fa5; --seventh:#8a5bb0;
   --display:"Bricolage Grotesque","Noto Sans SC",system-ui,sans-serif;
   --body:"Noto Sans SC",system-ui,-apple-system,"PingFang SC",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -28,21 +29,28 @@ html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-b
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0f1c19; --panel:#172925; --ink:#e7f1ec; --muted:#93aaa2; --line:#2a403a; --soft:#1f342f;
   --accent:#f09a47; --accent-ink:#1a0f05; --wood:#b07a46; --wood-dark:#6e431f;
-  --good:#3cc888; --warn:#e6ab47; --bad:#e2685a; --needle:#e7f1ec; color-scheme:dark}}
+  --good:#3cc888; --warn:#e6ab47; --bad:#e2685a; --needle:#e7f1ec;
+  --major:#f09a47; --minor:#7f9fd6; --seventh:#b48ad6; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f1c19; --panel:#172925; --ink:#e7f1ec; --muted:#93aaa2; --line:#2a403a; --soft:#1f342f;
   --accent:#f09a47; --accent-ink:#1a0f05; --wood:#b07a46; --wood-dark:#6e431f;
-  --good:#3cc888; --warn:#e6ab47; --bad:#e2685a; --needle:#e7f1ec; color-scheme:dark}
+  --good:#3cc888; --warn:#e6ab47; --bad:#e2685a; --needle:#e7f1ec;
+  --major:#f09a47; --minor:#7f9fd6; --seventh:#b48ad6; color-scheme:dark}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);padding:0 16px;-webkit-tap-highlight-color:transparent}
 .wrap{max-width:460px;margin:0 auto;padding-block:16px 32px;display:flex;flex-direction:column;gap:16px}
-header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.title-block{display:flex;flex-direction:column;gap:2px;min-width:0}
 h1{font-family:var(--display);font-weight:700;font-size:1.5rem;margin:0;letter-spacing:-.01em}
 h2{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0}
+h3{font-family:var(--display);font-weight:700;font-size:1rem;margin:0}
 .sub{color:var(--muted);font-size:.82rem}
+.lang{display:flex;background:var(--soft);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;color:var(--muted);font:500 .8rem var(--body);padding:5px 11px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .tab-panel{display:flex;flex-direction:column;gap:16px}
 
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--soft);border-radius:12px;padding:4px;gap:4px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
-.tab{font:500 .88rem var(--body);border:0;background:transparent;color:var(--muted);padding:9px 4px;border-radius:9px;cursor:pointer}
+.tab{font:500 .86rem var(--body);border:0;background:transparent;color:var(--muted);padding:9px 2px;border-radius:9px;cursor:pointer}
 .tab[aria-selected="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 
 .chips{display:flex;gap:8px;flex-wrap:wrap}
@@ -63,12 +71,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .head{position:relative;background:linear-gradient(180deg,var(--wood),var(--wood-dark));border-radius:22px 22px 10px 10px;padding:22px 18px 18px;display:grid;grid-template-columns:1fr 1fr;gap:14px 40px}
 .head::before{content:"";position:absolute;top:14px;bottom:14px;left:50%;width:2px;transform:translateX(-50%);background:rgba(255,255,255,.18)}
-.peg{position:relative;display:flex;align-items:center;gap:10px;background:var(--panel);color:var(--ink);border:2px solid transparent;border-radius:14px;padding:10px 12px;cursor:pointer;font:inherit;text-align:left;transition:transform .08s,border-color .15s}
+.peg{position:relative;display:flex;align-items:center;gap:10px;background:var(--panel);color:var(--ink);border:2px solid transparent;border-radius:14px;padding:10px 12px;cursor:pointer;font:inherit;text-align:left;transition:transform .08s,border-color .15s;min-width:0}
 .peg:active{transform:scale(.97)}
 .peg.right{flex-direction:row-reverse;text-align:right}
 .peg .dot{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--bg);font:700 1.05rem var(--display)}
 .peg .lbl{display:flex;flex-direction:column;min-width:0}
-.peg .lbl b{font:700 1rem var(--display)}
+.peg .lbl b{font:700 .95rem var(--display)}
 .peg .lbl span{font:400 .72rem var(--mono);color:var(--muted)}
 .peg.playing{border-color:var(--accent)}
 .peg.playing .dot{background:var(--accent);color:var(--accent-ink)}
@@ -83,6 +91,26 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .note-box{font-size:.82rem;color:var(--muted);line-height:1.6;background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin:0}
 .tips{font-size:.82rem;color:var(--muted);line-height:1.7;margin:0;padding-left:1.1em}
 
+/* lesson */
+.lesson{display:flex;flex-direction:column;gap:12px}
+.lesson summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lesson summary::-webkit-details-marker{display:none}
+.lesson summary::after{content:"＋";color:var(--muted);font-size:1.1rem}
+.lesson[open] summary::after{content:"－"}
+.lesson-body{display:flex;flex-direction:column;gap:14px;margin-top:12px}
+.lesson p{margin:0;font-size:.9rem;line-height:1.7}
+.kind{border-left:4px solid var(--c);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:6px}
+.kind.major{--c:var(--major)} .kind.minor{--c:var(--minor)} .kind.seventh{--c:var(--seventh)}
+.kind .tag{font:700 .95rem var(--display);color:var(--c)}
+.kind .tag span{font-weight:500;color:var(--muted);font-family:var(--body);font-size:.8rem;margin-left:6px}
+.formula{font:500 .85rem var(--mono);color:var(--ink);background:var(--soft);border-radius:8px;padding:6px 10px;display:inline-block}
+.formula em{font-style:normal;color:var(--c);font-weight:700}
+.listen{display:flex;flex-wrap:wrap;gap:8px}
+.listen button{font:500 .82rem var(--body);border-radius:999px;padding:7px 12px;border:1px solid var(--c,var(--line));background:var(--panel);color:var(--ink);cursor:pointer}
+.listen button:active{transform:scale(.97)}
+.namekey{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.85rem;align-items:baseline}
+.namekey b{font:700 1rem var(--display)}
+
 /* chord diagrams */
 .dg{display:block;width:100%;height:auto}
 .dg .str{stroke:var(--muted);stroke-width:1.2}
@@ -94,12 +122,17 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .dg .sl{fill:var(--muted);font:500 9px var(--mono);text-anchor:middle}
 .chord-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 @media (max-width:360px){.chord-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.chord-card{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 6px 6px;cursor:pointer;color:var(--ink);font:inherit;transition:transform .08s,border-color .15s}
+.chord-card{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:14px;padding:8px 6px 6px;cursor:pointer;color:var(--ink);font:inherit;transition:transform .08s,border-color .15s;min-width:0}
+.chord-card.major{--c:var(--major)} .chord-card.minor{--c:var(--minor)} .chord-card.seventh{--c:var(--seventh)}
 .chord-card:active{transform:scale(.97)}
-.chord-card.on{border-color:var(--accent)}
+.chord-card.on{border-color:var(--c)}
 .chord-card b{font:700 1.05rem var(--display)}
 .chord-card .dg{max-width:76px}
-.group-label{font-size:.75rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:4px 0 -6px}
+.chord-card .notes{font:400 .66rem var(--mono);color:var(--muted);white-space:nowrap}
+.group-label{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:4px}
+.group-label b{font:700 .95rem var(--display);color:var(--c)}
+.group-label span{font-size:.78rem;color:var(--muted)}
+.group-label.major{--c:var(--major)} .group-label.minor{--c:var(--minor)} .group-label.seventh{--c:var(--seventh)}
 
 /* practice */
 .stage{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;align-items:center}
@@ -115,10 +148,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .beat.on{background:var(--accent);border-color:var(--accent)}
 .beat.on.first{background:var(--ink);border-color:var(--ink)}
 .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.row label{font-size:.85rem;color:var(--muted);min-width:4.5em}
+.row label,.row .lab{font-size:.85rem;color:var(--muted);min-width:5.5em}
 .row input[type=range]{flex:1;min-width:140px;accent-color:var(--accent)}
 .num{font:500 .95rem var(--mono);font-variant-numeric:tabular-nums;min-width:4.5ch;text-align:right}
-.stats{display:flex;justify-content:space-around;margin-top:12px;font-size:.8rem;color:var(--muted);text-align:center}
+.stats{display:flex;justify-content:space-around;gap:8px;margin-top:12px;font-size:.8rem;color:var(--muted);text-align:center}
 .stats b{display:block;font:500 1.2rem var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
 
 /* quiz */
@@ -139,21 +172,27 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 <body>
 <div class="wrap">
   <header>
-    <h1>尤克里里练习</h1>
-    <span class="sub" id="tuningName">标准调弦 · G C E A</span>
+    <div class="title-block">
+      <h1 data-t="appTitle">尤克里里练习</h1>
+      <span class="sub" id="tuningName"></span>
+    </div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" id="lang-zh" data-lang="zh">中文</button>
+      <button type="button" id="lang-en" data-lang="en">EN</button>
+    </div>
   </header>
 
-  <nav class="tabs" role="tablist" aria-label="功能">
-    <button class="tab" role="tab" id="tab-tune" aria-selected="true" data-tab="tune" type="button">调音</button>
-    <button class="tab" role="tab" id="tab-lib" aria-selected="false" data-tab="lib" type="button">和弦图</button>
-    <button class="tab" role="tab" id="tab-prac" aria-selected="false" data-tab="prac" type="button">换和弦</button>
-    <button class="tab" role="tab" id="tab-quiz" aria-selected="false" data-tab="quiz" type="button">听辨</button>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-tune" data-tab="tune" type="button" data-t="tabTune">调音</button>
+    <button class="tab" role="tab" id="tab-lib" data-tab="lib" type="button" data-t="tabLib">和弦</button>
+    <button class="tab" role="tab" id="tab-prac" data-tab="prac" type="button" data-t="tabPrac">换和弦</button>
+    <button class="tab" role="tab" id="tab-quiz" data-tab="quiz" type="button" data-t="tabQuiz">听辨</button>
   </nav>
 
-  <!-- ============ 调音 ============ -->
+  <!-- ============ Tune ============ -->
   <section class="tab-panel" id="panel-tune">
-    <div class="chips" role="group" aria-label="调弦方式" id="chips"></div>
-    <section class="panel" aria-label="音准表">
+    <div class="chips" role="group" id="chips"></div>
+    <section class="panel">
       <svg class="gauge" viewBox="0 0 300 165" aria-hidden="true">
         <path d="M 30 150 A 120 120 0 0 1 270 150" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
         <path id="zone" d="" fill="none" stroke="var(--good)" stroke-width="10" stroke-linecap="round" opacity=".55"/>
@@ -168,129 +207,259 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       </svg>
       <div class="readout">
         <div class="note" id="note">–</div>
-        <div class="meta"><span id="hz">— Hz</span><span id="cents">— 音分</span></div>
+        <div class="meta"><span id="hz">— Hz</span><span id="cents">—</span></div>
       </div>
-      <div class="status" id="status">点下面的弦听标准音，或打开麦克风自动检测</div>
+      <div class="status" id="status"></div>
     </section>
-    <section class="head" aria-label="琴弦" id="head"></section>
+    <section class="head" id="head"></section>
     <div class="controls">
-      <button class="btn primary" id="micBtn" type="button">🎤 打开麦克风</button>
-      <button class="btn" id="loopBtn" type="button" aria-pressed="false">循环播放</button>
+      <button class="btn primary" id="micBtn" type="button"></button>
+      <button class="btn" id="loopBtn" type="button" aria-pressed="false" data-t="loop">循环播放</button>
     </div>
-    <p class="note-box" id="micNote" hidden></p>
+    <p class="note-box" id="micNote" hidden data-t="micFail"></p>
     <ul class="tips">
-      <li>弦的顺序：拿琴时从上到下，离脸最近的那根是 4 弦。</li>
-      <li>指针偏左是偏低，要拧紧；偏右是偏高，要放松。落在绿色区域（±5 音分）就准了。</li>
-      <li>新弦会持续拉伸，头几天要多调几次。</li>
+      <li data-t="tuneTip1"></li>
+      <li data-t="tuneTip2"></li>
+      <li data-t="tuneTip3"></li>
     </ul>
   </section>
 
-  <!-- ============ 和弦图 ============ -->
+  <!-- ============ Chords ============ -->
   <section class="tab-panel" id="panel-lib" hidden>
-    <p class="sub" style="margin:0">点和弦听扫弦声。图上从左到右是 4 弦 G、3 弦 C、2 弦 E、1 弦 A，数字表示用哪根手指：1 食指，2 中指，3 无名指，4 小指。</p>
+    <details class="panel lesson" id="lesson">
+      <summary><h2 data-t="lessonTitle"></h2></summary>
+      <div class="lesson-body">
+        <p data-t="lessonIntro"></p>
+        <p data-t="lessonRoot"></p>
+
+        <div class="kind major">
+          <div class="tag"><span class="k" data-t="majorName"></span><span data-t="majorFeel"></span></div>
+          <p data-t="majorText"></p>
+          <div><span class="formula">C = C · <em>E</em> · G</span></div>
+          <div class="listen">
+            <button type="button" data-play="C" data-t="playC"></button>
+            <button type="button" data-play="F" data-t="playF"></button>
+            <button type="button" data-play="G" data-t="playG"></button>
+          </div>
+        </div>
+
+        <div class="kind minor">
+          <div class="tag"><span class="k" data-t="minorName"></span><span data-t="minorFeel"></span></div>
+          <p data-t="minorText"></p>
+          <div><span class="formula">Cm = C · <em>E♭</em> · G</span></div>
+          <div class="listen">
+            <button type="button" data-seq="C,Cm" data-t="playCvsCm"></button>
+            <button type="button" data-play="Am" data-t="playAm"></button>
+            <button type="button" data-seq="A,Am" data-t="playAvsAm"></button>
+          </div>
+        </div>
+
+        <div class="kind seventh">
+          <div class="tag"><span class="k" data-t="seventhName"></span><span data-t="seventhFeel"></span></div>
+          <p data-t="seventhText"></p>
+          <div><span class="formula">G7 = G · B · D · <em>F</em></span></div>
+          <div class="listen">
+            <button type="button" data-seq="G,C" data-t="playGC"></button>
+            <button type="button" data-seq="G7,C" data-t="playG7C"></button>
+          </div>
+        </div>
+
+        <div>
+          <h3 data-t="readName"></h3>
+          <div class="namekey" style="margin-top:8px">
+            <b>C</b><span data-t="keyC"></span>
+            <b>Am</b><span data-t="keyAm"></span>
+            <b>G7</b><span data-t="keyG7"></span>
+            <b>B♭</b><span data-t="keyBb"></span>
+            <b>F♯</b><span data-t="keySharp"></span>
+          </div>
+        </div>
+      </div>
+    </details>
+    <p class="sub" style="margin:0" data-t="libHelp"></p>
     <div id="lib"></div>
   </section>
 
-  <!-- ============ 换和弦 ============ -->
+  <!-- ============ Practice ============ -->
   <section class="tab-panel" id="panel-prac" hidden>
     <div>
-      <h2>选进行</h2>
+      <h2 data-t="pickProg"></h2>
       <div class="chips" id="presets" style="margin-top:8px"></div>
     </div>
     <div>
-      <h2>或者自己选和弦</h2>
+      <h2 data-t="pickOwn"></h2>
       <div class="chips" id="pracPick" style="margin-top:8px"></div>
     </div>
-
     <section class="panel">
       <div class="stage">
         <div class="now"><div class="name" id="nowName">C</div><div id="nowDg"></div></div>
-        <div class="next"><span class="cap">下一个</span><div class="name" id="nextName">Am</div><div id="nextDg"></div></div>
+        <div class="next"><span class="cap" data-t="next"></span><div class="name" id="nextName">Am</div><div id="nextDg"></div></div>
       </div>
       <div class="beats" id="beats"></div>
       <div class="stats">
-        <div><b id="stChanges">0</b>换了几次</div>
-        <div><b id="stTime">0:00</b>练习时间</div>
-        <div><b id="stBest">–</b>最快速度</div>
+        <div><b id="stChanges">0</b><span data-t="stChanges"></span></div>
+        <div><b id="stTime">0:00</b><span data-t="stTime"></span></div>
+        <div><b id="stBest">–</b><span data-t="stBest"></span></div>
       </div>
     </section>
-
-    <div class="row"><label for="bpm">速度</label><input type="range" id="bpm" min="40" max="160" step="2" value="70"><span class="num" id="bpmVal">70</span></div>
-    <div class="row"><label>每个和弦</label>
+    <div class="row"><label for="bpm" data-t="speed"></label><input type="range" id="bpm" min="40" max="160" step="2" value="70"><span class="num" id="bpmVal">70</span></div>
+    <div class="row"><span class="lab" data-t="perChord"></span>
       <div class="chips" id="beatsPer">
-        <button class="chip small" type="button" data-n="2">2 拍</button>
-        <button class="chip small" type="button" data-n="4">4 拍</button>
-        <button class="chip small" type="button" data-n="8">8 拍</button>
+        <button class="chip small" type="button" data-n="2"></button>
+        <button class="chip small" type="button" data-n="4"></button>
+        <button class="chip small" type="button" data-n="8"></button>
       </div>
     </div>
-    <div class="row"><label>顺序</label>
+    <div class="row"><span class="lab" data-t="orderLab"></span>
       <div class="chips" id="orderPick">
-        <button class="chip small" type="button" data-o="seq">按顺序</button>
-        <button class="chip small" type="button" data-o="rand">随机</button>
+        <button class="chip small" type="button" data-o="seq" data-t="orderSeq"></button>
+        <button class="chip small" type="button" data-o="rand" data-t="orderRand"></button>
       </div>
     </div>
     <div class="controls">
-      <button class="btn primary" id="pracBtn" type="button">▶ 开始</button>
-      <button class="btn" id="strumBtn" type="button" aria-pressed="true">示范扫弦：开</button>
+      <button class="btn primary" id="pracBtn" type="button"></button>
+      <button class="btn" id="strumBtn" type="button"></button>
     </div>
     <ul class="tips">
-      <li>先慢后快。能连续 1 分钟不卡顿再提高 10 BPM。</li>
-      <li>换和弦时，能不抬的手指就不抬。比如 C→Am，可以想象手指“滑过去”。</li>
-      <li>“最快速度”会记下你完整练满 1 分钟的最高 BPM。</li>
+      <li data-t="pracTip1"></li>
+      <li data-t="pracTip2"></li>
+      <li data-t="pracTip3"></li>
     </ul>
   </section>
 
-  <!-- ============ 听辨 ============ -->
+  <!-- ============ Quiz ============ -->
   <section class="tab-panel" id="panel-quiz" hidden>
     <div>
-      <h2>难度</h2>
+      <h2 data-t="level"></h2>
       <div class="chips" id="levels" style="margin-top:8px"></div>
     </div>
     <section class="panel">
       <div class="quiz-q">
-        <button class="big-play" id="quizPlay" type="button">▶ 听</button>
-        <div class="feedback" id="quizFb">点橙色按钮听一个和弦，然后选出它</div>
+        <button class="big-play" id="quizPlay" type="button" data-t="listenBtn"></button>
+        <div class="feedback" id="quizFb"></div>
         <div class="reveal" id="quizReveal"></div>
       </div>
       <div class="stats">
-        <div><b id="qScore">0/0</b>答对</div>
-        <div><b id="qStreak">0</b>连对</div>
-        <div><b id="qBest">0</b>最佳连对</div>
+        <div><b id="qScore">0/0</b><span data-t="qScore"></span></div>
+        <div><b id="qStreak">0</b><span data-t="qStreak"></span></div>
+        <div><b id="qBest">0</b><span data-t="qBest"></span></div>
       </div>
     </section>
     <div class="answers" id="answers"></div>
     <div class="controls">
-      <button class="btn" id="quizArp" type="button">一个音一个音地听</button>
-      <button class="btn primary" id="quizNext" type="button" disabled>下一题</button>
+      <button class="btn" id="quizArp" type="button" data-t="arp"></button>
+      <button class="btn primary" id="quizNext" type="button" disabled data-t="nextQ"></button>
     </div>
     <ul class="tips">
-      <li>大三和弦（C、F、G）听起来明亮，小三和弦（Am、Dm、Em）听起来偏暗、偏忧伤，七和弦（G7、C7）有一种“还没结束”的感觉。</li>
-      <li>答错后可以点其他选项对比着听。</li>
+      <li data-t="quizTip1"></li>
+      <li data-t="quizTip2"></li>
     </ul>
   </section>
 </div>
 
 <script>
 (function(){
-  // ---------- helpers ----------
   const $ = id => document.getElementById(id);
   const store = {
     get(k,d){ try{ const v=localStorage.getItem("uke-"+k); return v===null?d:JSON.parse(v); }catch(e){ return d; } },
     set(k,v){ try{ localStorage.setItem("uke-"+k, JSON.stringify(v)); }catch(e){} }
   };
+
+  // =====================================================================
+  //  Texts — 中文 / English
+  // =====================================================================
+  const TX = {
+    appTitle:{zh:"尤克里里练习", en:"Ukulele Practice"},
+    tabTune:{zh:"调音", en:"Tune"}, tabLib:{zh:"和弦", en:"Chords"}, tabPrac:{zh:"换和弦", en:"Switch"}, tabQuiz:{zh:"听辨", en:"Ear"},
+    loop:{zh:"循环播放", en:"Repeat tone"},
+    micOn:{zh:"🎤 打开麦克风", en:"🎤 Start microphone"}, micOff:{zh:"⏹ 关闭麦克风", en:"⏹ Stop microphone"},
+    micFail:{zh:"没能打开麦克风。请在浏览器的网站设置里允许本页使用麦克风，然后再点一次按钮。也可以先点弦钮听标准音，凭耳朵调。",
+             en:"Couldn't start the microphone. Allow microphone access for this page in your browser's site settings, then tap the button again. You can also tap a peg and tune by ear."},
+    tuneIdle:{zh:"点下面的弦钮听标准音，或打开麦克风自动检测", en:"Tap a peg below to hear its note, or start the microphone"},
+    pluckOne:{zh:"拨一根空弦…", en:"Pluck one open string…"},
+    micStopped:{zh:"麦克风已关闭", en:"Microphone off"},
+    str:{zh:"{n} 弦", en:"String {n}"},
+    playing:{zh:"正在播放 {s}，拨你的弦对比", en:"Playing {s} — pluck yours and compare"},
+    far:{zh:"离 {s} 还很远，先大致拧到附近", en:"Far from {s} — turn the peg until you're close"},
+    inTune:{zh:"{s} 已调准 ✓", en:"{s} is in tune ✓"},
+    low:{zh:"{s} 偏低 {c} 音分 · 拧紧一点", en:"{s} is {c} cents flat · tighten a little"},
+    high:{zh:"{s} 偏高 {c} 音分 · 放松一点", en:"{s} is {c} cents sharp · loosen a little"},
+    cents:{zh:"音分", en:"cents"},
+    tuneTip1:{zh:"弦的顺序：拿琴时从上到下，离脸最近的那根是 4 弦。", en:"String order: holding the uke, the string closest to your face is string 4."},
+    tuneTip2:{zh:"指针偏左是偏低，要拧紧；偏右是偏高，要放松。落在绿色区域（±5 音分）就准了。", en:"Needle left = flat, tighten. Needle right = sharp, loosen. The green zone (±5 cents) is in tune."},
+    tuneTip3:{zh:"新弦会持续拉伸，头几天要多调几次。", en:"New strings keep stretching, so retune often for the first few days."},
+    tuning_std:{zh:"标准调弦 · G C E A", en:"Standard · G C E A"}, tuning_lowg:{zh:"低音 G · G C E A", en:"Low G · G C E A"},
+    tuning_d:{zh:"D 调弦 · A D F♯ B", en:"D tuning · A D F♯ B"}, tuning_bari:{zh:"上低音 · D G B E", en:"Baritone · D G B E"},
+    chip_std:{zh:"标准 GCEA", en:"Standard"}, chip_lowg:{zh:"Low G", en:"Low G"}, chip_d:{zh:"D 调", en:"D tuning"}, chip_bari:{zh:"Baritone", en:"Baritone"},
+
+    lessonTitle:{zh:"🎓 和弦入门：大三、小三、七和弦是什么？", en:"🎓 Chord basics: major, minor, 7th"},
+    lessonIntro:{zh:"和弦（chord）就是几个音同时响。尤克里里上，左手按住一个手型，右手扫过四根弦，这四个音合在一起就是一个和弦。",
+                 en:"A chord is a few notes sounding together. On the ukulele you hold a shape with your left hand and strum all four strings — together they make a chord."},
+    lessonRoot:{zh:"和弦名字里的字母叫根音（root），可以理解成这个和弦的“家”。C 和弦就是以 C 为家的和弦。字母后面跟的东西，决定这个和弦是什么“颜色”。",
+                en:"The letter in a chord's name is its root, the chord's \"home\" note. A C chord is built on C. What comes after the letter tells you the chord's colour."},
+    majorName:{zh:"大三和弦 · Major", en:"Major chord"}, majorFeel:{zh:"明亮、开心", en:"bright, happy"},
+    majorText:{zh:"名字只有一个字母，比如 C、F、G。由三个音组成：根音、中间音、上面的音。大部分流行歌开头和结尾都是大三和弦。",
+               en:"Just a letter, like C, F or G. Three notes: the root, a middle note, and a top note. Most pop songs start and end on a major chord."},
+    minorName:{zh:"小三和弦 · Minor", en:"Minor chord"}, minorFeel:{zh:"偏暗、忧伤", en:"darker, sad"},
+    minorText:{zh:"字母后面加小写 m，比如 Am、Dm、Em，m 就是 minor。它和大三和弦只差一个音：把中间那个音降低半音（比如 E 变成 E♭），整个和弦就从明亮变成忧伤。点“C 和 Cm 对比”听听看。",
+               en:"A letter plus a lower-case m, like Am, Dm, Em. It differs from the major chord by one note: the middle note drops a half step (E becomes E♭), and the chord turns from bright to sad. Tap \"C vs Cm\" to hear it."},
+    seventhName:{zh:"七和弦 · Seventh (7th)", en:"Seventh chord (7th)"}, seventhFeel:{zh:"没说完、想往下走", en:"unfinished, wants to move on"},
+    seventhText:{zh:"字母后面加 7，比如 G7、C7。在大三和弦上再加一个音，听起来像一句话还没说完，特别想接到下一个和弦。最经典的是 G7 → C：先听 G → C，再听 G7 → C，后者“回家”的感觉更强。",
+                 en:"A letter plus 7, like G7 or C7. It adds a fourth note to a major chord, so it sounds unfinished and wants to move to the next chord. The classic move is G7 → C: compare G → C with G7 → C and notice the stronger pull home."},
+    playC:{zh:"▶ C", en:"▶ C"}, playF:{zh:"▶ F", en:"▶ F"}, playG:{zh:"▶ G", en:"▶ G"},
+    playCvsCm:{zh:"▶ C 和 Cm 对比", en:"▶ C vs Cm"}, playAm:{zh:"▶ Am", en:"▶ Am"}, playAvsAm:{zh:"▶ A 和 Am 对比", en:"▶ A vs Am"},
+    playGC:{zh:"▶ G → C", en:"▶ G → C"}, playG7C:{zh:"▶ G7 → C", en:"▶ G7 → C"},
+    readName:{zh:"怎么读和弦名", en:"Reading chord names"},
+    keyC:{zh:"C 大三和弦（C major），只写字母 = 大三", en:"C major: a letter alone means major"},
+    keyAm:{zh:"A 小三和弦（A minor），m = 小三", en:"A minor: m means minor"},
+    keyG7:{zh:"G 七和弦（G seven），7 = 七和弦", en:"G seven: 7 means seventh chord"},
+    keyBb:{zh:"降 B 大三（B flat），♭ = 降半音", en:"B flat major: ♭ means a half step lower"},
+    keySharp:{zh:"升 F（F sharp），♯ = 升半音", en:"F sharp: ♯ means a half step higher"},
+    libHelp:{zh:"点和弦卡片听声音。图上从左到右是 4 弦 G、3 弦 C、2 弦 E、1 弦 A；圆点里的数字是手指：1 食指，2 中指，3 无名指，4 小指；空心圈是空弦。卡片下面是这个和弦包含的音。",
+             en:"Tap a card to hear it. Left to right: string 4 (G), 3 (C), 2 (E), 1 (A). Numbers are fingers: 1 index, 2 middle, 3 ring, 4 pinky; an open circle means play the string open. The small text lists the chord's notes."},
+    grp_major:{zh:"大三和弦 · Major", en:"Major"}, grp_minor:{zh:"小三和弦 · Minor", en:"Minor"}, grp_seventh:{zh:"七和弦 · 7th", en:"Seventh (7th)"},
+    grpd_major:{zh:"明亮", en:"bright"}, grpd_minor:{zh:"偏暗", en:"darker"}, grpd_seventh:{zh:"想往下走", en:"wants to move on"},
+    altTuning:{zh:"这些指法按标准 G C E A 调弦写。你现在选的是 {t}，同样的手型弹出来是别的和弦；这里的声音按标准调弦播放。",
+               en:"These shapes are for standard G C E A. You've selected {t}, where the same shapes give different chords; sounds here use standard tuning."},
+
+    pickProg:{zh:"选一个进行", en:"Pick a progression"}, pickOwn:{zh:"或者自己选和弦", en:"Or choose your own chords"},
+    next:{zh:"下一个", en:"Next"}, stChanges:{zh:"换了几次", en:"Changes"}, stTime:{zh:"练习时间", en:"Time"}, stBest:{zh:"最快速度", en:"Best tempo"},
+    speed:{zh:"速度 BPM", en:"Tempo BPM"}, perChord:{zh:"每个和弦", en:"Per chord"}, beatsN:{zh:"{n} 拍", en:"{n} beats"},
+    orderLab:{zh:"顺序", en:"Order"}, orderSeq:{zh:"按顺序", en:"In order"}, orderRand:{zh:"随机", en:"Random"},
+    start:{zh:"▶ 开始", en:"▶ Start"}, stop:{zh:"⏹ 停止", en:"⏹ Stop"},
+    demoOn:{zh:"示范扫弦：开", en:"Demo strum: on"}, demoOff:{zh:"示范扫弦：关", en:"Demo strum: off"},
+    preset_starter:{zh:"入门：C–Am", en:"Starter: C–Am"}, preset_blues:{zh:"布鲁斯 A7–D7–E7", en:"Blues A7–D7–E7"},
+    pracTip1:{zh:"先慢后快。能连续 1 分钟不卡顿，再提高 10 BPM。", en:"Start slow. When you can go a full minute without stopping, add 10 BPM."},
+    pracTip2:{zh:"换和弦时，能不抬的手指就不抬。比如 C→Am，可以想象手指“滑过去”。", en:"Keep fingers that don't need to move. Going C→Am, think of sliding rather than lifting."},
+    pracTip3:{zh:"“最快速度”会记下你完整练满 1 分钟的最高 BPM。", en:"\"Best tempo\" records the highest BPM you played for a full minute."},
+
+    level:{zh:"难度", en:"Level"},
+    lvl_l1:{zh:"入门 · C F G Am", en:"Starter · C F G Am"}, lvl_l2:{zh:"大三 vs 小三", en:"Major vs minor"},
+    lvl_l3:{zh:"加七和弦", en:"Add 7th chords"}, lvl_l4:{zh:"全部", en:"All chords"},
+    listenBtn:{zh:"▶ 听", en:"▶ Listen"},
+    quizIdle:{zh:"点橙色按钮听一个和弦，然后选出它", en:"Tap the orange button to hear a chord, then pick it"},
+    quizAsk:{zh:"是哪个和弦？", en:"Which chord is it?"},
+    quizRight:{zh:"答对了 ✓", en:"Correct ✓"},
+    quizWrong:{zh:"是 {c}。点其他选项可以对比着听。", en:"It was {c}. Tap other answers to compare."},
+    qScore:{zh:"答对", en:"Correct"}, qStreak:{zh:"连对", en:"Streak"}, qBest:{zh:"最佳连对", en:"Best streak"},
+    arp:{zh:"一个音一个音地听", en:"Play note by note"}, nextQ:{zh:"下一题", en:"Next"},
+    quizTip1:{zh:"大三和弦（Major，比如 C、F、G）听起来明亮；小三和弦（Minor，比如 Am、Dm、Em）偏暗、忧伤；七和弦（7th，比如 G7、C7）像话没说完。",
+              en:"Major chords (C, F, G) sound bright; minor chords (Am, Dm, Em) sound darker; 7th chords (G7, C7) sound unfinished."},
+    quizTip2:{zh:"答错后可以点其他选项对比着听。还分不清大小三和弦的话，先去“和弦”页的入门小课听几遍对比。",
+              en:"After a wrong answer, tap other options to compare. If major and minor still sound alike, replay the comparisons in the Chords tab lesson."}
+  };
+  let lang = store.get("lang","zh"); if(lang!=="zh"&&lang!=="en") lang="zh";
+  const t = (k, v) => { let s=(TX[k]&&TX[k][lang])||k; if(v) for(const x in v) s=s.split("{"+x+"}").join(v[x]); return s; };
+
   const NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  const PC_LABEL = ["C","C♯","D","E♭","E","F","F♯","G","G♯","A","B♭","B"];
   const pretty = n => n.replace("#","♯");
   const noteMidi = n => { const m=n.match(/^([A-G]#?)(\d)$/); return NAMES.indexOf(m[1])+(parseInt(m[2])+1)*12; };
   const midiFreq = m => 440*Math.pow(2,(m-69)/12);
   const noteToFreq = n => midiFreq(noteMidi(n));
   const freqToMidi = f => 69+12*Math.log2(f/440);
 
-  const TUNINGS = {
-    std:  {name:"标准调弦 · G C E A", chip:"标准 GCEA", notes:["G4","C4","E4","A4"]},
-    lowg: {name:"低音 G · G C E A",   chip:"Low G",     notes:["G3","C4","E4","A4"]},
-    d:    {name:"D 调弦 · A D F♯ B",  chip:"D 调",      notes:["A4","D4","F#4","B4"]},
-    bari: {name:"上低音 · D G B E",   chip:"Baritone",  notes:["D3","G3","B3","E4"]}
-  };
+  const TUNINGS = { std:["G4","C4","E4","A4"], lowg:["G3","C4","E4","A4"], d:["A4","D4","F#4","B4"], bari:["D3","G3","B3","E4"] };
   let current = store.get("tuning","std"); if(!TUNINGS[current]) current="std";
 
   // ---------- audio ----------
@@ -314,33 +483,24 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     const c=getCtx(), src=c.createBufferSource(), g=c.createGain();
     src.buffer=ksBuffer(freq); g.gain.value=gain; src.connect(g).connect(c.destination);
     src.start(when||c.currentTime); voices.add(src); src.onended=()=>voices.delete(src);
-    return src;
   }
   function stopAll(){ voices.forEach(v=>{try{v.stop()}catch(e){}}); voices.clear(); }
 
   // ---------- tabs ----------
   let activeTab="tune";
-  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>showTab(t.dataset.tab));
+  document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
   function showTab(name){
     if(activeTab==="tune" && name!=="tune" && micOn) stopMic();
     if(activeTab==="prac" && name!=="prac" && running) stopPractice();
     activeTab=name;
-    document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===name));
+    document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===name));
     ["tune","lib","prac","quiz"].forEach(n=>$("panel-"+n).hidden = n!==name);
-    store.set("tab",name);
-    window.scrollTo(0,0);
+    store.set("tab",name); window.scrollTo(0,0);
   }
 
   // =====================================================================
-  //  调音
+  //  Tuner
   // =====================================================================
-  const chips=$("chips");
-  Object.entries(TUNINGS).forEach(([k,t])=>{
-    const b=document.createElement("button");
-    b.className="chip"; b.type="button"; b.id="chip-"+k; b.textContent=t.chip;
-    b.onclick=()=>{ current=k; store.set("tuning",k); renderTuner(); };
-    chips.appendChild(b);
-  });
   const ticks=$("ticks");
   for(let c=-50;c<=50;c+=10){
     const a=(c/50)*60*Math.PI/180, r1=c===0?100:106, r2=114;
@@ -353,43 +513,48 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   (function(){ const a=5/50*60*Math.PI/180, r=120;
     $("zone").setAttribute("d",`M ${150-r*Math.sin(a)} ${150-r*Math.cos(a)} A ${r} ${r} 0 0 1 ${150+r*Math.sin(a)} ${150-r*Math.cos(a)}`); })();
 
-  const head=$("head");
+  const strLabel = (i,n) => `${t("str",{n:4-i})} ${pretty(n)}`;
   function renderTuner(){
-    const t=TUNINGS[current];
-    $("tuningName").textContent=t.name;
-    Object.keys(TUNINGS).forEach(k=>$("chip-"+k).setAttribute("aria-pressed",k===current));
-    head.innerHTML="";
-    // 2+2 headstock seen from the front: 4 弦 / 1 弦 at the top, 3 弦 / 2 弦 nearer the nut
+    const notes=TUNINGS[current];
+    $("tuningName").textContent=t("tuning_"+current);
+    const ch=$("chips"); ch.innerHTML="";
+    Object.keys(TUNINGS).forEach(k=>{
+      const b=document.createElement("button"); b.className="chip"; b.type="button"; b.textContent=t("chip_"+k);
+      b.setAttribute("aria-pressed",k===current);
+      b.onclick=()=>{ current=k; store.set("tuning",k); renderTuner(); renderLibrary(); };
+      ch.appendChild(b);
+    });
+    const head=$("head"); head.innerHTML="";
+    // 2+2 headstock seen from the front: strings 4 / 1 at the top, 3 / 2 nearer the nut
     [{i:0,s:"left"},{i:3,s:"right"},{i:1,s:"left"},{i:2,s:"right"}].forEach(({i,s})=>{
-      const n=t.notes[i], f=noteToFreq(n), b=document.createElement("button");
+      const n=notes[i], f=noteToFreq(n), b=document.createElement("button");
       b.type="button"; b.className="peg"+(s==="right"?" right":""); b.dataset.idx=i; b.id="peg-"+i;
-      b.innerHTML=`<span class="dot">${pretty(n.replace(/\d/,""))}</span><span class="lbl"><b>${4-i} 弦 · ${pretty(n)}</b><span>${f.toFixed(2)} Hz</span></span>`;
-      b.setAttribute("aria-label",`${4-i} 弦 ${pretty(n)}，点击播放`);
+      b.innerHTML=`<span class="dot">${pretty(n.replace(/\d/,""))}</span><span class="lbl"><b>${t("str",{n:4-i})} · ${pretty(n)}</b><span>${f.toFixed(2)} Hz</span></span>`;
       b.onclick=()=>pluck(i);
       head.appendChild(b);
     });
-    renderLibrary(); renderPracticeStage();
+    micBtn.textContent = micOn? t("micOff") : t("micOn");
   }
 
   let loopTimer=null, playingIdx=null, looping=false;
   $("loopBtn").onclick=()=>{ looping=!looping; $("loopBtn").setAttribute("aria-pressed",looping); if(!looping) clearTimeout(loopTimer); };
   function pluck(i){
-    const n=TUNINGS[current].notes[i], f=noteToFreq(n);
+    const n=TUNINGS[current][i], f=noteToFreq(n);
     stopAll(); playFreq(f,0,0.9);
     document.querySelectorAll(".peg").forEach(p=>p.classList.remove("playing"));
     const peg=$("peg-"+i); peg.classList.add("playing"); playingIdx=i;
-    if(!micOn) showNote(n.replace(/\d/,""), n.match(/\d/)[0], f, 0, `正在播放 ${4-i} 弦 · ${pretty(n)}，拨你的弦对比`, "");
+    if(!micOn) showNote(n.replace(/\d/,""), n.match(/\d/)[0], f, 0, t("playing",{s:strLabel(i,n)}), "");
     clearTimeout(loopTimer);
     loopTimer=setTimeout(()=>{ peg.classList.remove("playing"); if(looping && playingIdx===i) pluck(i); }, looping?2200:3000);
   }
   const needle=$("needle");
   function setNeedle(c){ c=Math.max(-50,Math.min(50,c)); needle.style.transform=`rotate(${c/50*60}deg)`; }
+  function setStatus(msg,cls){ const s=$("status"); s.textContent=msg; s.className="status "+(cls||""); }
   function showNote(name,oct,hz,cents,msg,cls){
     $("note").innerHTML=`${pretty(name)}<sub>${oct}</sub>`;
     $("hz").textContent=hz.toFixed(1)+" Hz";
-    $("cents").textContent=(cents>0?"+":cents<0?"−":"±")+Math.abs(Math.round(cents))+" 音分";
-    const s=$("status"); s.textContent=msg; s.className="status "+cls;
-    setNeedle(cents);
+    $("cents").textContent=(cents>0?"+":cents<0?"−":"±")+Math.abs(Math.round(cents))+" "+t("cents");
+    setStatus(msg,cls); setNeedle(cents);
   }
 
   let micOn=false, stream=null, analyser=null, raf=null, smooth=null, lastSeen=0;
@@ -400,23 +565,18 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     try{
       if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) throw new Error("unsupported");
       stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
-    }catch(e){
-      micNote.hidden=false;
-      micNote.textContent="没能打开麦克风。请在浏览器的网站设置里允许本页使用麦克风，然后再点一次按钮。也可以先用上面的标准音“听音调音”。";
-      return;
-    }
+    }catch(e){ micNote.hidden=false; return; }
     const c=getCtx(); const srcNode=c.createMediaStreamSource(stream);
     analyser=c.createAnalyser(); analyser.fftSize=4096; srcNode.connect(analyser);
-    micOn=true; micBtn.textContent="⏹ 关闭麦克风"; micBtn.classList.remove("primary");
-    $("status").textContent="请拨一根空弦…"; $("status").className="status";
-    micLoop();
+    micOn=true; micBtn.textContent=t("micOff"); micBtn.classList.remove("primary");
+    setStatus(t("pluckOne")); micLoop();
   };
   function stopMic(){
     micOn=false; cancelAnimationFrame(raf);
-    if(stream) stream.getTracks().forEach(t=>t.stop());
-    micBtn.textContent="🎤 打开麦克风"; micBtn.classList.add("primary");
+    if(stream) stream.getTracks().forEach(tr=>tr.stop());
+    micBtn.textContent=t("micOn"); micBtn.classList.add("primary");
     document.querySelectorAll(".peg").forEach(p=>p.classList.remove("target"));
-    $("status").textContent="麦克风已关闭"; $("status").className="status";
+    setStatus(t("micStopped"));
   }
   const tbuf=new Float32Array(4096);
   function detect(b,sr){
@@ -440,16 +600,16 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     const f=detect(tbuf,ctx.sampleRate), now=performance.now();
     if(f>60 && f<1200){
       smooth = smooth? smooth*0.7+f*0.3 : f; lastSeen=now;
-      const t=TUNINGS[current];
+      const notes=TUNINGS[current];
       let best=0,bd=1e9;
-      t.notes.forEach((n,i)=>{ const dd=Math.abs(freqToMidi(smooth)-noteMidi(n)); if(dd<bd){bd=dd;best=i;} });
-      const target=t.notes[best], cents=1200*Math.log2(smooth/noteToFreq(target));
+      notes.forEach((n,i)=>{ const dd=Math.abs(freqToMidi(smooth)-noteMidi(n)); if(dd<bd){bd=dd;best=i;} });
+      const target=notes[best], cents=1200*Math.log2(smooth/noteToFreq(target));
       document.querySelectorAll(".peg").forEach(p=>p.classList.toggle("target",+p.dataset.idx===best));
-      const label=`${4-best} 弦 ${pretty(target)}`; let msg,cls;
-      if(Math.abs(cents)>150){ msg=`离 ${label} 还很远，先大致拧到附近`; cls="bad"; }
-      else if(Math.abs(cents)<=5){ msg=`${label} 已调准 ✓`; cls="good"; }
-      else if(cents<0){ msg=`${label} 偏低 ${Math.abs(Math.round(cents))} 音分 · 拧紧一点`; cls="warn"; }
-      else { msg=`${label} 偏高 ${Math.round(cents)} 音分 · 放松一点`; cls="warn"; }
+      const s=strLabel(best,target), c=Math.abs(Math.round(cents)); let msg,cls;
+      if(Math.abs(cents)>150){ msg=t("far",{s}); cls="bad"; }
+      else if(Math.abs(cents)<=5){ msg=t("inTune",{s}); cls="good"; }
+      else if(cents<0){ msg=t("low",{s,c}); cls="warn"; }
+      else { msg=t("high",{s,c}); cls="warn"; }
       const m=Math.round(freqToMidi(smooth));
       showNote(NAMES[(m%12+12)%12], Math.floor(m/12)-1, smooth, Math.abs(cents)>150?(cents>0?50:-50):cents, msg, cls);
     } else if(now-lastSeen>1200){ smooth=null; }
@@ -457,43 +617,54 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   }
 
   // =====================================================================
-  //  和弦数据（标准 C 调弦 G C E A 的指法）
-  //  frets: [4弦G, 3弦C, 2弦E, 1弦A]；fingers 同顺序，0 = 空弦
+  //  Chords (standard G C E A shapes)
+  //  f: frets [string 4 G, 3 C, 2 E, 1 A]; fg: fingers, 0 = open
   // =====================================================================
   const CHORDS = {
-    "C":   {f:[0,0,0,3], fg:[0,0,0,3], g:"大三"},
-    "F":   {f:[2,0,1,0], fg:[2,0,1,0], g:"大三"},
-    "G":   {f:[0,2,3,2], fg:[0,1,3,2], g:"大三"},
-    "D":   {f:[2,2,2,0], fg:[1,2,3,0], g:"大三"},
-    "A":   {f:[2,1,0,0], fg:[2,1,0,0], g:"大三"},
-    "Bb":  {f:[3,2,1,1], fg:[3,2,1,1], g:"大三", barre:{fret:1,from:2,to:3}},
-    "Am":  {f:[2,0,0,0], fg:[2,0,0,0], g:"小三"},
-    "Dm":  {f:[2,2,1,0], fg:[2,3,1,0], g:"小三"},
-    "Em":  {f:[0,4,3,2], fg:[0,3,2,1], g:"小三"},
-    "Bm":  {f:[4,2,2,2], fg:[3,1,1,1], g:"小三", barre:{fret:2,from:1,to:3}},
-    "G7":  {f:[0,2,1,2], fg:[0,2,1,3], g:"七和弦"},
-    "C7":  {f:[0,0,0,1], fg:[0,0,0,1], g:"七和弦"},
-    "D7":  {f:[2,0,2,0], fg:[1,0,2,0], g:"七和弦"},
-    "E7":  {f:[1,2,0,2], fg:[1,2,0,3], g:"七和弦"},
-    "A7":  {f:[0,1,0,0], fg:[0,1,0,0], g:"七和弦"},
-    "Am7": {f:[0,0,0,0], fg:[0,0,0,0], g:"七和弦"}
+    "C":   {f:[0,0,0,3], fg:[0,0,0,3], g:"major"},
+    "F":   {f:[2,0,1,0], fg:[2,0,1,0], g:"major"},
+    "G":   {f:[0,2,3,2], fg:[0,1,3,2], g:"major"},
+    "D":   {f:[2,2,2,0], fg:[1,2,3,0], g:"major"},
+    "A":   {f:[2,1,0,0], fg:[2,1,0,0], g:"major"},
+    "Bb":  {f:[3,2,1,1], fg:[3,2,1,1], g:"major", barre:{fret:1,from:2,to:3}},
+    "Am":  {f:[2,0,0,0], fg:[2,0,0,0], g:"minor"},
+    "Dm":  {f:[2,2,1,0], fg:[2,3,1,0], g:"minor"},
+    "Em":  {f:[0,4,3,2], fg:[0,3,2,1], g:"minor"},
+    "Bm":  {f:[4,2,2,2], fg:[3,1,1,1], g:"minor", barre:{fret:2,from:1,to:3}},
+    "G7":  {f:[0,2,1,2], fg:[0,2,1,3], g:"seventh"},
+    "C7":  {f:[0,0,0,1], fg:[0,0,0,1], g:"seventh"},
+    "D7":  {f:[2,2,2,3], fg:[1,1,1,2], g:"seventh", barre:{fret:2,from:0,to:2}},
+    "E7":  {f:[1,2,0,2], fg:[1,2,0,3], g:"seventh"},
+    "A7":  {f:[0,1,0,0], fg:[0,1,0,0], g:"seventh"},
+    "Am7": {f:[0,0,0,0], fg:[0,0,0,0], g:"seventh"}
   };
+  const EXTRA = { "Cm": {f:[0,3,3,3], fg:[0,1,2,3]} };   // only for the lesson comparison
   const CHORD_ORDER = Object.keys(CHORDS);
   const shown = n => n.replace("b","♭");
+  const shape = n => CHORDS[n]||EXTRA[n];
 
-  // 和弦音按当前调弦计算；D 调和 Baritone 的指法不同，这里按标准调弦发声
   function chordMidis(name){
-    const base = (current==="lowg") ? TUNINGS.lowg.notes : TUNINGS.std.notes;
-    return CHORDS[name].f.map((fr,i)=>noteMidi(base[i])+fr);
+    const base = current==="lowg" ? TUNINGS.lowg : TUNINGS.std;
+    return shape(name).f.map((fr,i)=>noteMidi(base[i])+fr);
+  }
+  function chordNotes(name){
+    const root = NAMES.indexOf(name[0]) - (name[1]==="b"?1:0);
+    const pcs=[...new Set(chordMidis(name).map(m=>m%12))];
+    pcs.sort((a,b)=>((a-root+12)%12)-((b-root+12)%12));
+    return pcs.map(p=>PC_LABEL[p]).join(" ");
   }
   function strum(name, when, gain, gap){
-    const c=getCtx(), t=when||c.currentTime;
-    chordMidis(name).forEach((m,i)=>playFreq(midiFreq(m), t+i*(gap??0.028), gain??0.32));
+    const c=getCtx(), t0=when||c.currentTime;
+    chordMidis(name).forEach((m,i)=>playFreq(midiFreq(m), t0+i*(gap??0.028), gain??0.32));
+  }
+  function strumSeq(names){
+    stopAll(); const c=getCtx(), t0=c.currentTime;
+    names.forEach((n,k)=>strum(n, t0+k*1.5));
   }
 
   function diagram(name){
-    const ch=CHORDS[name], W=100, H=128, xs=[20,40,60,80], top=26, step=20, frets=5;
-    let s=`<svg class="dg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${shown(name)} 和弦指法">`;
+    const ch=shape(name), W=100, H=128, xs=[20,40,60,80], top=26, step=20, frets=5;
+    let s=`<svg class="dg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${shown(name)}">`;
     for(let k=1;k<=frets;k++) s+=`<line class="fret" x1="20" x2="80" y1="${top+k*step}" y2="${top+k*step}"/>`;
     xs.forEach(x=>s+=`<line class="str" x1="${x}" x2="${x}" y1="${top}" y2="${top+frets*step}"/>`);
     s+=`<line class="nut" x1="19" x2="81" y1="${top}" y2="${top}"/>`;
@@ -509,24 +680,26 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     return s+"</svg>";
   }
 
-  // =====================================================================
-  //  和弦图
-  // =====================================================================
+  // lesson buttons
+  document.querySelectorAll("#lesson [data-play]").forEach(b=>b.onclick=()=>{ stopAll(); strum(b.dataset.play); });
+  document.querySelectorAll("#lesson [data-seq]").forEach(b=>b.onclick=()=>strumSeq(b.dataset.seq.split(",")));
+  $("lesson").open = store.get("lessonOpen", true);
+  $("lesson").addEventListener("toggle", ()=>store.set("lessonOpen", $("lesson").open));
+
   function renderLibrary(){
     const lib=$("lib"); lib.innerHTML="";
     if(current==="d"||current==="bari"){
-      const p=document.createElement("p"); p.className="note-box";
-      p.textContent="这些指法是按标准 G C E A 调弦写的。你现在选的是"+TUNINGS[current].chip+"，同样的手型弹出来是别的和弦，声音这里按标准调弦播放。";
-      lib.appendChild(p);
+      const p=document.createElement("p"); p.className="note-box"; p.style.marginBottom="12px";
+      p.textContent=t("altTuning",{t:t("chip_"+current)}); lib.appendChild(p);
     }
-    ["大三","小三","七和弦"].forEach(gr=>{
-      const lab=document.createElement("div"); lab.className="group-label";
-      lab.textContent={"大三":"大三和弦 · 明亮","小三":"小三和弦 · 偏暗","七和弦":"七和弦 · 想往下走"}[gr];
+    ["major","minor","seventh"].forEach(gr=>{
+      const lab=document.createElement("div"); lab.className="group-label "+gr;
+      lab.innerHTML=`<b>${t("grp_"+gr)}</b><span>${t("grpd_"+gr)}</span>`;
       lib.appendChild(lab);
-      const grid=document.createElement("div"); grid.className="chord-grid"; grid.style.marginTop="12px"; grid.style.marginBottom="12px";
+      const grid=document.createElement("div"); grid.className="chord-grid"; grid.style.margin="10px 0 16px";
       CHORD_ORDER.filter(n=>CHORDS[n].g===gr).forEach(n=>{
-        const b=document.createElement("button"); b.type="button"; b.className="chord-card";
-        b.innerHTML=`<b>${shown(n)}</b>${diagram(n)}`;
+        const b=document.createElement("button"); b.type="button"; b.className="chord-card "+gr;
+        b.innerHTML=`<b>${shown(n)}</b>${diagram(n)}<span class="notes">${chordNotes(n)}</span>`;
         b.onclick=()=>{ stopAll(); strum(n); b.classList.add("on"); setTimeout(()=>b.classList.remove("on"),700); };
         grid.appendChild(b);
       });
@@ -535,16 +708,16 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   }
 
   // =====================================================================
-  //  换和弦练习
+  //  Chord switching practice
   // =====================================================================
   const PRESETS = [
-    {name:"入门：C–Am", seq:["C","Am"]},
-    {name:"C–Am–F–G", seq:["C","Am","F","G"]},
-    {name:"C–G–Am–F", seq:["C","G","Am","F"]},
-    {name:"Am–F–C–G", seq:["Am","F","C","G"]},
-    {name:"G–Em–C–D", seq:["G","Em","C","D"]},
-    {name:"C–F–G7", seq:["C","F","G7"]},
-    {name:"布鲁斯 A7–D7–E7", seq:["A7","D7","E7"]}
+    {key:"preset_starter", seq:["C","Am"]},
+    {label:"C–Am–F–G", seq:["C","Am","F","G"]},
+    {label:"C–G–Am–F", seq:["C","G","Am","F"]},
+    {label:"Am–F–C–G", seq:["Am","F","C","G"]},
+    {label:"G–Em–C–D", seq:["G","Em","C","D"]},
+    {label:"C–F–G7", seq:["C","F","G7"]},
+    {key:"preset_blues", seq:["A7","D7","E7"]}
   ];
   let pracSeq = store.get("pracSeq", ["C","Am","F","G"]).filter(n=>CHORDS[n]);
   if(pracSeq.length<2) pracSeq=["C","Am","F","G"];
@@ -557,7 +730,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     const pr=$("presets"); pr.innerHTML="";
     PRESETS.forEach(p=>{
       const b=document.createElement("button"); b.type="button"; b.className="chip small";
-      b.textContent=p.name.replace(/b/g,"♭"); b.setAttribute("aria-pressed", sameSeq(p.seq,pracSeq));
+      b.textContent=p.key? t(p.key) : p.label; b.setAttribute("aria-pressed", sameSeq(p.seq,pracSeq));
       b.onclick=()=>{ pracSeq=[...p.seq]; afterSeqChange(); };
       pr.appendChild(b);
     });
@@ -572,9 +745,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       };
       pk.appendChild(b);
     });
-    document.querySelectorAll("#beatsPer .chip").forEach(b=>b.setAttribute("aria-pressed", +b.dataset.n===beatsPer));
+    document.querySelectorAll("#beatsPer .chip").forEach(b=>{ b.textContent=t("beatsN",{n:b.dataset.n}); b.setAttribute("aria-pressed", +b.dataset.n===beatsPer); });
     document.querySelectorAll("#orderPick .chip").forEach(b=>b.setAttribute("aria-pressed", b.dataset.o===order));
-    $("strumBtn").setAttribute("aria-pressed",demoStrum); $("strumBtn").textContent="示范扫弦："+(demoStrum?"开":"关");
+    $("strumBtn").setAttribute("aria-pressed",demoStrum); $("strumBtn").textContent=demoStrum?t("demoOn"):t("demoOff");
+    $("pracBtn").textContent = running? t("stop") : t("start");
     const best=store.get("best:"+pracSeq.join("-"),null);
     $("stBest").textContent = best? best+" BPM" : "–";
   }
@@ -600,14 +774,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     for(let i=0;i<beatsPer;i++){ const d=document.createElement("span"); d.className="beat"+(i===on?" on":"")+(i===0&&on===0?" first":""); bx.appendChild(d); }
   }
 
-  // metronome scheduler
   let running=false, timer=null, nextTime=0, beatNo=0, changes=0, startedAt=0, clockTimer=null, wakeLock=null, fullMinuteAt=null;
   const queue=[];
-  function click(t, accent){
+  function click(time, accent){
     const c=getCtx(), o=c.createOscillator(), g=c.createGain();
-    o.frequency.value=accent?1600:1050; g.gain.setValueAtTime(0.0001,t);
-    g.gain.exponentialRampToValueAtTime(accent?0.5:0.3,t+0.002); g.gain.exponentialRampToValueAtTime(0.0001,t+0.05);
-    o.connect(g).connect(c.destination); o.start(t); o.stop(t+0.06);
+    o.frequency.value=accent?1600:1050; g.gain.setValueAtTime(0.0001,time);
+    g.gain.exponentialRampToValueAtTime(accent?0.5:0.3,time+0.002); g.gain.exponentialRampToValueAtTime(0.0001,time+0.05);
+    o.connect(g).connect(c.destination); o.start(time); o.stop(time+0.06);
   }
   function schedule(){
     const c=getCtx();
@@ -640,7 +813,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     nextIdx=pickNext(idx);
     nextTime=c.currentTime+0.15; startedAt=performance.now(); fullMinuteAt=startedAt+60000;
     $("stChanges").textContent="0"; $("stTime").textContent="0:00";
-    $("pracBtn").textContent="⏹ 停止"; $("pracBtn").classList.remove("primary");
+    $("pracBtn").textContent=t("stop"); $("pracBtn").classList.remove("primary");
     timer=setInterval(schedule,25); schedule(); requestAnimationFrame(drawLoop);
     clockTimer=setInterval(()=>{
       const s=Math.floor((performance.now()-startedAt)/1000);
@@ -655,29 +828,29 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   }
   function stopPractice(){
     running=false; clearInterval(timer); clearInterval(clockTimer); queue.length=0; stopAll();
-    $("pracBtn").textContent="▶ 开始"; $("pracBtn").classList.add("primary"); renderBeats(-1);
+    $("pracBtn").textContent=t("start"); $("pracBtn").classList.add("primary"); renderBeats(-1);
     if(wakeLock){ wakeLock.release().catch(()=>{}); wakeLock=null; }
   }
   $("pracBtn").onclick=()=> running? stopPractice() : startPractice();
 
   // =====================================================================
-  //  听辨
+  //  Ear training
   // =====================================================================
   const LEVELS = [
-    {id:"l1", name:"入门 · C F G Am", pool:["C","F","G","Am"]},
-    {id:"l2", name:"大三 vs 小三", pool:["C","F","G","Am","Dm","Em"]},
-    {id:"l3", name:"加七和弦", pool:["C","F","G","Am","Dm","Em","G7","C7"]},
-    {id:"l4", name:"全部", pool:CHORD_ORDER}
+    {id:"l1", pool:["C","F","G","Am"]},
+    {id:"l2", pool:["C","F","G","Am","Dm","Em"]},
+    {id:"l3", pool:["C","F","G","Am","Dm","Em","G7","C7"]},
+    {id:"l4", pool:CHORD_ORDER}
   ];
   let level = store.get("level","l1"); if(!LEVELS.find(l=>l.id===level)) level="l1";
-  let qTarget=null, qAnswered=false, qRight=0, qTotal=0, qStreak=0, qBest=store.get("qBest",0);
+  let qTarget=null, qAnswered=false, qRight=0, qTotal=0, qStreak=0, qBest=store.get("qBest",0), fbKey="quizIdle";
   $("qBest").textContent=qBest;
-  function pool(){ return LEVELS.find(l=>l.id===level).pool; }
+  const pool = () => LEVELS.find(l=>l.id===level).pool;
   function renderLevels(){
     const lv=$("levels"); lv.innerHTML="";
     LEVELS.forEach(l=>{
       const b=document.createElement("button"); b.type="button"; b.className="chip small";
-      b.textContent=l.name; b.setAttribute("aria-pressed", l.id===level);
+      b.textContent=t("lvl_"+l.id); b.setAttribute("aria-pressed", l.id===level);
       b.onclick=()=>{ level=l.id; store.set("level",level); qTarget=null; renderLevels(); renderAnswers(); resetQuestion(); };
       lv.appendChild(b);
     });
@@ -686,41 +859,56 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     const box=$("answers"); box.innerHTML="";
     pool().forEach(n=>{
       const b=document.createElement("button"); b.type="button"; b.className="ans"; b.dataset.c=n; b.textContent=shown(n);
-      b.onclick=()=>answer(n,b);
-      box.appendChild(b);
+      b.onclick=()=>answer(n,b); box.appendChild(b);
     });
   }
+  function setFb(key, cls, vars){ fbKey=key; fbVars=vars; const f=$("quizFb"); f.textContent=t(key,vars); f.className="feedback "+(cls||""); }
+  let fbVars=null;
   function resetQuestion(){
     qAnswered=false; $("quizNext").disabled=true; $("quizReveal").innerHTML="";
-    $("quizFb").textContent="点橙色按钮听一个和弦，然后选出它"; $("quizFb").className="feedback";
+    setFb("quizIdle");
     document.querySelectorAll(".ans").forEach(a=>a.classList.remove("right","wrong"));
   }
   function newQuestion(){
     const p=pool(); let n; do{ n=p[Math.floor(Math.random()*p.length)]; } while(n===qTarget && p.length>1);
-    qTarget=n; resetQuestion(); $("quizFb").textContent="是哪个和弦？";
+    qTarget=n; resetQuestion(); setFb("quizAsk");
     stopAll(); strum(qTarget);
   }
   $("quizPlay").onclick=()=>{ if(!qTarget){ newQuestion(); return; } stopAll(); strum(qTarget); };
   $("quizArp").onclick=()=>{ if(!qTarget) newQuestion(); else { stopAll(); strum(qTarget, 0, 0.4, 0.38); } };
   $("quizNext").onclick=newQuestion;
   function answer(n,btn){
-    if(!qTarget){ stopAll(); strum(n); return; }
-    if(qAnswered){ stopAll(); strum(n); return; }   // 答完后点其他选项可以对比听
+    if(!qTarget || qAnswered){ stopAll(); strum(n); return; }
     qAnswered=true; qTotal++;
-    const ok = n===qTarget, fb=$("quizFb");
+    const ok = n===qTarget;
     document.querySelector(`.ans[data-c="${qTarget}"]`).classList.add("right");
-    if(ok){ qRight++; qStreak++; fb.textContent="答对了 ✓"; fb.className="feedback good"; }
-    else { btn.classList.add("wrong"); qStreak=0; fb.textContent=`是 ${shown(qTarget)}。点其他选项可以对比着听。`; fb.className="feedback bad"; }
+    if(ok){ qRight++; qStreak++; setFb("quizRight","good"); }
+    else { btn.classList.add("wrong"); qStreak=0; setFb("quizWrong","bad",{c:shown(qTarget)}); }
     if(qStreak>qBest){ qBest=qStreak; store.set("qBest",qBest); }
     $("qScore").textContent=qRight+"/"+qTotal; $("qStreak").textContent=qStreak; $("qBest").textContent=qBest;
     $("quizReveal").innerHTML=diagram(qTarget);
     $("quizNext").disabled=false;
-    if(ok) setTimeout(()=>{ if(qAnswered && activeTab==="quiz" && $("quizNext").disabled===false) newQuestion(); }, 1400);
+    if(ok){ const q=qTarget; setTimeout(()=>{ if(qAnswered && qTarget===q && activeTab==="quiz") newQuestion(); }, 1400); }
   }
 
+  // =====================================================================
+  //  Language
+  // =====================================================================
+  function applyLang(){
+    document.documentElement.lang = lang==="zh" ? "zh-CN" : "en";
+    document.title = lang==="zh" ? "尤克里里练习" : "Ukulele Practice";
+    $("lang-zh").setAttribute("aria-pressed", lang==="zh"); $("lang-en").setAttribute("aria-pressed", lang==="en");
+    document.querySelectorAll("[data-t]").forEach(el=>el.textContent=t(el.dataset.t));
+    renderTuner(); renderLibrary(); renderPracticeControls(); renderLevels();
+    if(!micOn && !$("status").textContent.trim() || $("status").dataset.idle!=="0") { setStatus(t("tuneIdle")); $("status").dataset.idle="1"; }
+    setFb(fbKey, $("quizFb").className.replace("feedback","").trim(), fbVars);
+  }
+  document.querySelectorAll(".lang button").forEach(b=>b.onclick=()=>{ lang=b.dataset.lang; store.set("lang",lang); applyLang(); });
+  // once the user interacts with the tuner, stop overwriting its status on language change
+  ["micBtn","head"].forEach(id=>$(id).addEventListener("click",()=>{ $("status").dataset.idle="0"; }, true));
+
   // ---------- init ----------
-  renderTuner(); renderPracticeControls(); renderPracticeStage(); renderBeats(-1);
-  renderLevels(); renderAnswers(); setNeedle(0);
+  applyLang(); renderPracticeStage(); renderBeats(-1); renderAnswers(); setNeedle(0);
   showTab(store.get("tab","tune"));
 })();
 </script>
